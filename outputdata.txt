@@ -1,0 +1,19 @@
+processing tokens from inputdata.txt ...
+>!??!ggee< matches GeePea.
+>!!PPPPEA< matches GeePea.
+>??!!gPgP< matches GeePea.
+>!PPEA< does not match.
+>!!PPPPPgee< does not match.
+>!?!?PgPgPgPEA< does not match.
+>(M|< matches Shake.
+>|WMW-< matches Shake.
+>-MWMWM(< matches Shake.
+>(M(< does not match.
+>|WMWM-< does not match.
+>-MwMwM(< does not match.
+>&ZYXPON?< matches Orc.
+>&abcklm+< matches Orc.
+>&*< matches Orc.
+>PONZYX?< does not match.
+>&mackle?< does not match.
+>&OPeNdOOR*< does not match.

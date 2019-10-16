@@ -1,0 +1,284 @@
+#----------------------------------------------------------------------
+Programming Assignment 04
+
+#----------------------------------------------------------------------
+Purpose:
+
+  * Demonstrate once again elementary understanding of Regular
+    Expressions and how to use them in the useful languages, C and
+    C++.
+
+#----------------------------------------------------------------------
+Background:
+
+  * The example input file will have multiple proposed tokens on
+    each line.  There also might be lines with no proposed tokens
+    and / or just or extra whitespace.
+
+  * The proposed tokens will be separated by whitespace, which is
+    to be ignored.
+
+  * Your program will consider successive tokens from the input
+    file and classify them as 'GeePea', 'Shake', 'Orc', or
+    'does not match'.
+
+	 "^[0-9a-fA-F]+[(][}][aeiouAEIOU]+$";
+
+  * An GeePea is an even number of exclamation points '!' or
+    question marks '?' followed by one or more 'g' or 'P' letters
+    followed by 'PEA' if it was only 'P' letters, 'gee' if
+    it was only 'g' letters, and nothing else if it was a mixture
+    of both.
+
+	GeePea =((!|?)%2==0)(g|P)(PEA if only P and no g)(gee if only 'g' letters)(nothing else if mix of P and g))
+		    "^([!|?][!|?])*[[g+gee]|[P+PEA]|[g|P)+] ]"
+
+    (FYI:  "an even number" means 0 or 2 or 4 or 6 or ..., which
+     can also be stated as 2n, where n >= 0.)
+
+  * A Shake is a left parenthesis '(' or a vertical bar '|' or a
+    minus sign '-' followed by an odd number of letters 'M'
+    through 'W' followed by a left parenthesis '(' or a vertical
+    bar '|' or a minus sign '-' BUT IT CANNOT END WITH THE SAME
+    CHARACTER WITH WHICH IT STARTED.  That is, if it begins with
+    '(', it must end with '|' or '-', and so forth.
+
+    (FYI:  "an odd number" means 1 or 3 or 5 or 7 or ..., which
+     can also be stated as 2n+1, where n >= 0.)
+
+	Shake = ['(' or '|' or '-'][[M-W]%2==1]['(' or '|' or '-']CANNOT END WITH STARTING CHAR
+		   ['('][M-W][M-WM-W]*['|' or '-']  ['|'][M-W][M-WM-W]*['(' or '-'] | ['-'][M-W][M-WM-W]*['|' | '('] 
+
+  * An Orc is an ampersand '&' followed by zero or more letters
+    'a' through 'm' or 'N' through 'Z', followed by an question
+    mark '?' when the all of the letters are uppercase, a plus
+    sign '+' when all of the letters are lowercase, or an asterisk
+    '*' when there are no letters at all.  Mixing lowercase and
+    uppercase letters is not allowed.
+
+	Orc = ('&')('a-mN-Z')*('?' IF ALL LETTERS UPPERCASE)('+' IF ALL LETTERS LOWERCASE)('*' IF NO LETTERS AT ALL)(NO MIXING OF UPPERCASE AND LOWERCASE)
+		['&'][['a-m'+'+'] | ['N-Z'+'?'] | '*']
+
+#----------------------------------------------------------------------
+Examples:
+
+  !??!ggee        -- legal GeePea
+  !!PPPPEA        -- legal GeePea
+  ??!!gPgP        -- legal GeePea
+
+  !PPEA           -- illegal GeePea, not even number of !, ? marks.
+  !!PPPgee        -- illegal GeePea, should have been PEA at end
+  !?!?PgPgPgPEA   -- illegal GeePea, should have had no PEA at end
+
+  (M|             -- legal Shake
+  |WMW-           -- legal Shake
+  -MWMWM(         -- legal Shake
+
+  (M(             -- illegal Shake, begins and ends with same character
+  |WMWM-          -- illegal Shake, even number of letters
+  -MwMwM(         -- illegal Shake, not all uppercase letters
+
+  &ZYXPON?        -- legal Orc
+  &abcklm+        -- legal Orc
+  &*              -- legal Orc
+
+  PONZYX?         -- illegal Orc, no & at front
+  &mackle*        -- illegal Orc, should be + at end
+  &OPeNdOOR*      -- illegal Orc, can't mix lowercase and uppercase
+
+#----------------------------------------------------------------------
+Tasks:
+
+  1. Download HMWK_04_dalioba.zip from Canvas.
+
+  2. Unzip the file somewhere convenient.
+
+  3. Change 'dalioba' in the name of the directory to your NetID.
+     (Your NetID is three letters followed by four or five digits.
+      The directory name will now be something like
+      'hmwk_04_abc1234', with YOUR NetID instead of 'abc1234'.)
+
+  4. Look in that directory.
+
+  5. Change the header lines in the skeleton files
+     hmwk_04.c / .cc :
+
+      -- Line 1:  Family name first, then a comma, then
+                  personal name.
+
+      -- Line 2:  Your NetID.
+
+      -- Line 3:  The date you edited the file in the format
+                  YYYY-MM-DD.
+
+     These must remain the first three lines of each file.
+
+  6. Run the files you just changed with the provided
+     'inputdata.text' as the input file.
+
+  7. Observe the following output (it will be the same no matter
+     which language you picked):
+
+processing tokens from inputdata.txt ...
+>!??!ggee< is the proposed token.
+>!!PPPPEA< is the proposed token.
+>??!!gPgP< is the proposed token.
+>!PPEA< is the proposed token.
+>!!PPPPPgee< is the proposed token.
+>!?!?PgPgPgPEA< is the proposed token.
+>(M|< is the proposed token.
+>|WMW-< is the proposed token.
+>-MWMWM(< is the proposed token.
+>(M(< is the proposed token.
+>|WMWM-< is the proposed token.
+>-MwMwM(< is the proposed token.
+>&ZYXPON?< is the proposed token.
+>&abcklm+< is the proposed token.
+>&*< is the proposed token.
+>PONZYX?< is the proposed token.
+>&mackle?< is the proposed token.
+>&OPeNdOOR*< is the proposed token.
+
+  8. Now, change the contents of processToken() function in each
+     of the hmwk_04.c and .cc files to use the regular expression
+     support of the corresponding language so that the following
+     output is generated for the 'inputdata.txt' test case file.
+
+processing tokens from inputdata.txt ...
+>!??!ggee< matches GeePea.
+>!!PPPPEA< matches GeePea.
+>??!!gPgP< matches GeePea.
+>!PPEA< does not match.
+>!!PPPPPgee< does not match.
+>!?!?PgPgPgPEA< does not match.
+>(M|< matches Shake.
+>|WMW-< matches Shake.
+>-MWMWM(< matches Shake.
+>(M(< does not match.
+>|WMWM-< does not match.
+>-MwMwM(< does not match.
+>&ZYXPON?< matches Orc.
+>&abcklm+< matches Orc.
+>&*< matches Orc.
+>PONZYX?< does not match.
+>&mackle?< does not match.
+>&OPeNdOOR*< does not match.
+
+  9. You should get the same output for each of the two languages.
+     Make your output match this format EXACTLY since when your
+     solutions are tested, their output will be checked using
+     diff.
+
+#----------------------------------------------------------------------
+Submission:
+
+Make a zipfile of your 'hmwk_04_abc1234' directory (where
+'abc1234' is replaced with YOUR NetID) and submit it on Canvas
+as your results for this assignment.  Your submission should be a
+zipfile that has exactly one item in it, a directory named
+'hmwk_04_abc1234' (where 'abc1234' is YOUR NetID).  Inside that
+directory should be two source files, hmwk_04.c and hmwk_04.cc.
+
+Your submission will be run on another file of test data.
+That file will have 24 possible tokens and your solutions will
+score 1/2 point for each token that generates the correct message.
+
+Therefore, the maximum possible score for this homework assignment
+is 24 points (12 + 12).
+
+#----------------------------------------------------------------------
+Hints:
+  1. Ensure your programs compile and run correctly.  Not
+     compiling or not generating the correct output will cost you
+     points.
+
+     Ensure your output messages match the format shown above when
+     you change the processToken() function.  The output is going
+     to be checked by a program, so it has to match EXACTLY.
+
+     After you write your programs, use diff or fc to compare
+     your output to the supplied 'outputdata.txt'.  It must match
+     EXACTLY or you will be penalized points.
+
+     ('EXACTLY' means character-by-character the same.  No, e.g.,
+      differences in spacing, no changes in wording, no changes
+      in punctuation, no changes in capitalization, and so forth.
+      Check your output against the 'outputdata.txt' file!)
+
+  2. Ensure that you update the three header lines at the top of
+     each of the source files with YOUR name (family name first,
+     then a comma, then your personal name), YOUR NetID, and the
+     date you edit the file (in the format YYYY-MM-DD).
+
+     Not updating the header lines properly or moving them from
+     being the first three line will cost you points.
+
+  3. DO NOT change anything in the main() routine in the C++ case.
+     You might want to put some initialization code at the top of
+     the main() routine in the C case (depending on how you do the
+     processing) but DO NOT change anything else in that routine.
+
+     Your programs will be tested from the command line on
+     different input files, so do not change the command line
+     argument processing.  If your programs do not run correctly
+     when run from the command line and supplying the input file
+     name as an argument, you will score ZERO points.
+
+  4. You might use some lines of static code aside from changing
+     the contents of processToken().  (This will depend on how you
+     decide to do the regular expressions.)
+
+  5. Ensure you use the regular expression support of the
+     language.  Programs that do not do all of their matching
+     using the regular expression support of the corresponding
+     language will score ZERO points.
+
+  6. These programs are not complex.  The processToken() routine
+     in the C reference solution is 12 lines of code.  There are
+     three additional lines of static data and 12 lines of
+     initialization code at the beginning of the C main function.
+
+     For C++, the processToken() routine is 15 lines of code,
+     including three lines of static declarations.
+
+     If you find yourself writing lots more code than this in
+     either the C or C++ case, you're probably going down the
+     wrong path.
+
+  7. After you write your regular expressions, make up some test
+     cases of your own to ensure that your REs really match the
+     descriptions given above.  The test cases in 'inputdata.txt'
+     are useful, but they are NOT comprehensive.  Make up some
+     more of your own.
+
+  8. Ensure your submission to Canvas is packaged EXACTLY as
+     described above.
+
+      -- Your submission should be a ZIP FILE (not a tar, rar, gz,
+         or any other kind of compressed file).
+
+      -- The zip file should be named 'hmwk_04_abc1234.zip' (with
+         'abc1234' replaced with YOUR NetID).
+
+      -- This zip file should have ONE item in it, a directory
+         named 'hmwk_04_abc1234'  (with 'abc1234' replaced with
+         YOUR NetID).
+
+      -- Your source files should be in that directory.  The
+         source files should be named hmwk_04.c / .cc.
+
+     Submissions in the wrong format score ZERO points.
+
+  9. After you submit your zip file on Canvas, download it from
+     Canvas and check that your submission is in the proper
+     format, that the programs run and print the correct output,
+     and that you updated the header lines correctly in each of
+     the source files.
+
+ 10. Are you CERTAIN you complied with all of these nit-picking
+     instructions?  Really?  Maybe you ought to check just one
+     more time. :)
+
+#----------------------------------------------------------------------
+
+
